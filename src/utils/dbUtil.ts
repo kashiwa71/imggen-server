@@ -24,7 +24,7 @@ export class DbUtil {
         this.client = await pool.connect();
       }
     
-    public async insert(prompt: string, response: string) {
+    public async insertChatRecord(prompt: string, response: string) {
         try {
           if(!this.client) {
             throw new Error('No client');
@@ -43,4 +43,25 @@ export class DbUtil {
           console.error(err);
         }
    }
+
+  public async insertImgenRecord(prompt: string, imgURLs: string[]) {
+    try{
+      if(!this.client){
+        throw new Error('No client');
+      }
+
+      const res1 = await this.client.query('INSERT INTO conversations DEFAULT VALUES RETURNING *');
+
+      for (let i = 0; i < imgURLs.length; i++){
+        const res2 = await this.client.query(
+          'INSERT INTO imagereponses (conversation_id, prompot, imagepath, created_at) \
+            VALUES ($1, $2, $3, $4)',
+            [res1.rows[0].id, prompt, imgURLs[i], new Date()]
+        );
+      }
+    }
+    catch (err) {
+      console.error(err);
+    }
+  }
 }

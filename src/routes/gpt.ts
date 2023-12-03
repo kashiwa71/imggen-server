@@ -31,7 +31,7 @@ router.post("/", async (req, res, next) => {
 
         // dbに保存
 
-        dbUtil.insert(prompt, json);
+        dbUtil.insertChatRecord(prompt, json);
 
         return res.status(200).send(json);
     }catch (err: any) {
