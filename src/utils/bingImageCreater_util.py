@@ -8,9 +8,12 @@ def main(u, prompt):
         quiet=True,
     )
 
-    result_url = bingimg.get_images(prompt)
+    try:
+        result_url = bingimg.get_images(prompt)
+        print(result_url)
 
-    print(result_url)
+    except Exception as e:
+        print(e)
 
 
 if __name__ == "__main__":

@@ -22,13 +22,24 @@ router.post("/links-only/:prompt", async (req: any, res: any) => {
     }
 
     await PythonShell.run('src/utils/bingImageCreater_util.py', options)
-      .then((messages) => {
-        // '['hoge', 'huga']' という形式なので、JSON.parseで配列に変換
-        const messages_json: string[] = JSON.parse(messages[0].replace(/'/g, '"'));
+      .then((result) => {
+
+        const parsed_result: string = result[0].replace(/'/g, '"')
+        let messages_json: string[] = [];
+
+        try {
+          // '['hoge', 'huga']' という形式なので、JSON.parseで配列に変換
+          const messages_json = JSON.parse(parsed_result);
+        } catch (err) {
+            console.error(err);
+            dbUtil.insertImgenRecord(prompt, ['failed to generate images']);
+            return res.status(500).send('Error: failed to generate images');
+        }
+
         // レスポンスになぜかsvgが含まれているので、それを除外
         const urls = messages_json.filter(item => !item.endsWith('.svg'));
 
-        dbUtil.insertImgenRecord(prompt, urls);  
+        dbUtil.insertImgenRecord(prompt, urls);
 
         return res.status(200).send(urls);
       });
