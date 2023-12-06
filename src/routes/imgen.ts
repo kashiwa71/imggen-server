@@ -13,23 +13,26 @@ const dbUtil = new DbUtil();
 
 router.post("/links-only/:prompt", async (req: any, res: any) => {
   try {
+    const prompt: string = req.params['prompt'];
+
     const options: any = {
       mode: 'text',
-      args: [process.env.BING_IMAGE_COOKIE, req.params['prompt']],
+      args: [process.env.BING_IMAGE_COOKIE, prompt],
       pythonOptions: ['-u'],
     }
 
     await PythonShell.run('src/utils/bingImageCreater_util.py', options)
       .then((messages) => {
         // '['hoge', 'huga']' という形式なので、JSON.parseで配列に変換
-        let messages_json: string[] = JSON.parse(messages[0].replace(/'/g, '"'));
+        const messages_json: string[] = JSON.parse(messages[0].replace(/'/g, '"'));
         // レスポンスになぜかsvgが含まれているので、それを除外
-        let url = messages_json.filter(item => !item.endsWith('.svg'));
-        return res.status(200).send(url);
+        const urls = messages_json.filter(item => !item.endsWith('.svg'));
+
+        dbUtil.insertImgenRecord(prompt, urls);  
+
+        return res.status(200).send(urls);
       });
 
-    //// dbに保存
-    //   dbUtil.insertImgenRecord(prompt, imageLinks);  
 
   } catch (err: any) {
     console.trace(err);
