@@ -1,6 +1,5 @@
 import BingImageCreator
 import sys
-import time
 
 def main(u, prompt):     
     bingimg = BingImageCreator.ImageGen(
