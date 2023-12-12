@@ -64,4 +64,20 @@ export class DbUtil {
       console.error(err);
     }
   }
+
+  public async getConversations() : Promise<any>{
+    try {
+      if(!this.client) {
+        throw new Error('No client');
+      }
+
+      const res = await this.client.query('SELECT * FROM conversations');
+
+      return res.rows;
+    }
+    catch (err) {
+      console.error(err);
+    }
+  }
+
 }

@@ -1,5 +1,6 @@
 import express, { application } from "express";
 import Config from "./config";
+import { DbUtil } from "./utils/dbUtil.js";
 
 // Link Routes
 import chat from "./routes/chat.js";
@@ -8,6 +9,7 @@ import gpt from "./routes/gpt.js";
 
 import { resolve } from "path";
 
+const db = new DbUtil();
 
 // Startup Express and Connect MongoDB
 const app = express();
@@ -21,13 +23,18 @@ app.use((req, res, next) => {
 
 app.get("/", (req, res) => {
   //response messsage
-  res.json({message:"Hello from Bob!"});
-
+  res.json({message:"access succeed!"});
 });
 
 // Use Routes
 app.use("/chat", chat);
 app.use("/imgen", imgen);
 app.use("/gpt", gpt);
+
+app.use("/coversation_history", async (req, res) => {
+  const conversations = await db.getConversations()
+    console.log(conversations);
+    res.json(conversations);
+});
 
 export default app;
