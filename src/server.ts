@@ -37,4 +37,11 @@ app.use("/coversation_history", async (req, res) => {
     res.json(conversations);
 });
 
+app.use("/coversation_log/", async (req, res) => {
+  const conversation_id: any = req.query.conversation_id;
+  const conversations = await db.getConversationLog(conversation_id)
+    console.log(conversations);
+    res.json(conversations);
+});
+
 export default app;

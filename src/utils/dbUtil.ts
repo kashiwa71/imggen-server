@@ -70,14 +70,27 @@ export class DbUtil {
       if(!this.client) {
         throw new Error('No client');
       }
-
       const res = await this.client.query('SELECT * FROM conversations');
-
       return res.rows;
     }
     catch (err) {
       console.error(err);
     }
   }
+
+  public async getConversationLog(conversation_id:string) : Promise<any>{
+    try {
+      if(!this.client) {
+        throw new Error('No client');
+      }
+      const res = await this.client.query('SELECT * FROM textresponses where conversation_id = $1', [conversation_id]);
+      return res.rows;
+    }
+    catch (err) {
+      console.error(err);
+    }
+  }
+
+
 
 }
